@@ -3,6 +3,7 @@ import { DM_Sans } from "next/font/google";
 import "../globals.css";
 import Navbar from "@/app/(frontend)/navbar";
 import Footer from "@/app/(frontend)/footer";
+import SearchFilters from "@/app/(frontend)/search-filters";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col">
         <Navbar />
+        <SearchFilters />
         <main className="flex-1 bg-[#F4F4F0]">
           {children}
         </main>
