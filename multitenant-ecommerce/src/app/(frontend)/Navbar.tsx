@@ -8,7 +8,7 @@ import {MenuIcon} from "lucide-react";
 
 import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
-import {NavbarSidebar} from "@/app/(frontend)/navbar-sidebar";
+import {NavbarSidebar} from "@/app/(frontend)/NavbarSidebar";
 
 const poppins = Poppins({
     subsets: ["latin"],
