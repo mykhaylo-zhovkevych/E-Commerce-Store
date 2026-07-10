@@ -33,7 +33,7 @@ const cateData = await payload.find({
   },
   where: {
     parent: {
-      exists: true
+      exists: false
     },
   },
 });

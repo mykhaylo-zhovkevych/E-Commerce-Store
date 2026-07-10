@@ -22,7 +22,7 @@ export default async function Home() {
         },
         where: {
             parent: {
-                exists: true
+                exists: false
             },
         },
     });
