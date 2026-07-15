@@ -24,6 +24,7 @@ const cateData = await payload.find({
   collection: "categories",
   depth: 1,
   pagination: false,
+  sort: "alt",
   select: {
     alt: true,
     slug: true,

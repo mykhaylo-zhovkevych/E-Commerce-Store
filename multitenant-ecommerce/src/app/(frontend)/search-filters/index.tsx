@@ -1,8 +1,6 @@
-import type { Category } from "@/payload-types";
 import { SearchInput } from "./SearchInput";
 import { Categories } from "./Categories";
-
-export type CategoryCustome = Pick<Category, "id" | "alt" | "color" | "subcategories">
+import {CategoryCustome} from "@/app/(frontend)/types";
 
 
 interface Props {
