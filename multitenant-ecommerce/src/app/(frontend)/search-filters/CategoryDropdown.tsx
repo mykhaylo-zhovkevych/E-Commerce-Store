@@ -1,12 +1,14 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import type { CategoryCustome } from "@/app/(frontend)/search-filters";
 import {cn} from "@/lib/utils";
 
 import {useRef, useState} from "react";
 import {useDropdownPosition} from "@/app/(frontend)/search-filters/use-dropdown-position";
 import SubcategoryMenu from "@/app/(frontend)/search-filters/SubcategoryMenu";
+import {CategoryCustome} from "@/app/(frontend)/types";
+import { useRouter } from "next/navigation";
+import {getCategoriesHref} from "@/app/(frontend)/search-filters/category-navigation";
 
 interface Props {
     category: CategoryCustome;
@@ -18,6 +20,7 @@ export const CategoryDropdown = ({ category, isActive, isNavigationHovered }: Pr
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { getDropdownPosition } = useDropdownPosition(dropdownRef);
+    const router = useRouter();
 
     const dropdownPosition = getDropdownPosition();
     // If subcategories length more than 0 return true else set to 0 which is false
@@ -33,11 +36,15 @@ export const CategoryDropdown = ({ category, isActive, isNavigationHovered }: Pr
         setIsOpen(false);
     }
 
+    const onCategoryClick = () => {
+        router.push(getCategoriesHref(category.slug));
+    };
+
     return (
         // Div wrapping the button
         <div className="relative" ref={dropdownRef} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
             <div className="relative">
-                <Button variant='elevated' className={cn("h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white", "hover:border-primary text-back", isActive && !isNavigationHovered && "b-white-primary")}>
+                <Button variant='elevated' onClick={onCategoryClick} className={cn("h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white", "hover:border-primary text-back", isActive && "border-black", isActive && !isNavigationHovered && "b-white-primary")}>
                     {category.alt}
                 </Button>
                 {hasSubcategories && (
@@ -50,7 +57,8 @@ export const CategoryDropdown = ({ category, isActive, isNavigationHovered }: Pr
             <SubcategoryMenu
                 category={category}
                 isOpen={isOpen && hasSubcategories}
-                position={dropdownPosition }
+                position={dropdownPosition}
+
             />
         </div>
     );

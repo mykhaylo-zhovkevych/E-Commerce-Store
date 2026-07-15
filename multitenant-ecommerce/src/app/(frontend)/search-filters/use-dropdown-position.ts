@@ -10,7 +10,7 @@ export const useDropdownPosition = (
         const dropdownWidth = 240;
 
         let left = rect.left + window.scrollX;
-        const top = rect.bottom + window.scrollY;
+        const top = rect.bottom;
 
         if (left + dropdownWidth > window.innerWidth) {
             // Align to right edge of button instead

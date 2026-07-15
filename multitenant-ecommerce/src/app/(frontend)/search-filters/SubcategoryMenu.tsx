@@ -1,5 +1,6 @@
 import Link from "next/link";
-import type { CategoryCustome } from ".";
+import {CategoryCustome} from "@/app/(frontend)/types";
+import { getCategoriesHref } from "@/app/(frontend)/search-filters/category-navigation";
 
 interface Props {
     category: CategoryCustome;
@@ -28,7 +29,7 @@ export const SubcategoryMenu = ({
                             return null;
 
                         return (
-                            <Link key={subcategory.slug} href="/" className="w-full text-left p-4 hover:bg-black hover:text-white flex justify-between items-center font-medium underline">
+                            <Link key={subcategory.slug} href={getCategoriesHref(category.slug, subcategory.slug)} className="w-full text-left p-4 hover:bg-black hover:text-white flex justify-between items-center font-medium underline">
                                 {subcategory.alt}
                             </Link>
                         );
