@@ -20,7 +20,7 @@ type CategorySeed = {
 const categories: CategorySeed[] = [
     {
         name: "All",
-        slug: "all",
+        slug: "/",
     },
     {
         name: "Business & Money",

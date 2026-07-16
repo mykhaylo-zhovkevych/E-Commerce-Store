@@ -1,35 +1,25 @@
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+"use client"
 
-export default async function Home() {
-    const payload = await getPayload({
-        config: configPromise,
-    })
-    // const data = await payload.find({
-    //     collection: "users",
-    // })
+import { useQuery} from "@tanstack/react-query";
+import { useTRPC} from "@/trpc/client";
 
-    const cateData = await payload.find({
-        collection: "categories",
-        depth: 1,
-        pagination: false,
-        select: {
-            alt: true,
-            slug: true,
-            color: true,
-            parent: true,
-            subcategories: true,
-        },
-        where: {
-            parent: {
-                exists: false
-            },
-        },
-    });
+
+export default function Home() {
+    const trpc = useTRPC();
+
+    const { data, isPending, error } = useQuery(
+        trpc.categories.getMany.queryOptions()
+    );
+
+    if (isPending) return <div>Loading...</div>;
+    if (error) return <div>Something is went wrong</div>;
+
+    // const queryClient = getQueryClient();
+    // const categories = await queryClient.fetchQuery(trpc.categories.getMany.queryOptions())
 
     return (
-        <div>
-            {JSON.stringify(cateData.docs, null, 2)}
-        </div>
+        <pre>
+            {JSON.stringify(data, null, 2)}
+        </pre>
     )
 }
