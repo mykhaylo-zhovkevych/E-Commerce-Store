@@ -1,18 +1,17 @@
 "use client";
 
 import { CategoryDropdown } from "@/app/(frontend)/search-filters/CategoryDropdown";
-import { CategoryCustome } from "@/app/(frontend)/types";
 import { usePathname } from "next/navigation";
+import {useTRPC} from "@/trpc/client";
+import {useSuspenseQuery} from "@tanstack/react-query";
 
 
-interface Props {
-    data: CategoryCustome[];
-}
-
-export const Categories = ({ data }: Props) => {
+export const Categories = () => {
     const pathname = usePathname();
-    const activeCategories = data.map((category) => category.slug);
+    const trpc = useTRPC();
+    const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
 
+    const activeCategories = data.map((category) => category.slug);
     const activeCategorySlug = activeCategories.find((slug) => pathname.split("/").includes(slug)) ?? "/";
 
     return (

@@ -2,16 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-
-import {useRef, useState} from "react";
 import {useDropdownPosition} from "@/app/(frontend)/search-filters/use-dropdown-position";
 import SubcategoryMenu from "@/app/(frontend)/search-filters/SubcategoryMenu";
-import {CategoryCustome} from "@/app/(frontend)/types";
-import { useRouter } from "next/navigation";
 import {getCategoriesHref} from "@/app/(frontend)/search-filters/category-navigation";
+import type {CategoriesGetManyOutputSingle} from "@/app/modules/categories/types";
+
+import { useRouter } from "next/navigation";
+import {useRef, useState} from "react";
 
 interface Props {
-    category: CategoryCustome;
+    category: CategoriesGetManyOutputSingle;
     isActive?: boolean;
     isNavigationHovered?: boolean;
 }

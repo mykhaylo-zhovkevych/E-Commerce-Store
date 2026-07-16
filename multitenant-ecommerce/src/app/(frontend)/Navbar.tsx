@@ -8,7 +8,7 @@ import {MenuIcon} from "lucide-react";
 
 import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
-import {NavbarSidebar} from "@/app/(frontend)/NavbarSidebar";
+import {NavbarSidebarLeft} from "@/app/(frontend)/NavbarSidebarLeft";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -56,7 +56,7 @@ interface NavbarItemProps {
 
 export const Navbar = () => {
     const pathname = usePathname()
-    const [isSidebarOpen, setSidebarOpen] = React.useState(true);
+    const [isSidebarOpen, setSidebarOpen] = React.useState(false);
 
 
     return (
@@ -67,7 +67,7 @@ export const Navbar = () => {
                 </span>
             </Link>
 
-            <NavbarSidebar items={navbarItems} open={isSidebarOpen} onOpenChange={setSidebarOpen} />
+            <NavbarSidebarLeft items={navbarItems} open={isSidebarOpen} onOpenChange={setSidebarOpen} />
             <div className="items-center gap-4 hidden lg:flex">
                 {navbarItems.map((item) => (
                     <NavbarItem key={item.href} {...item} isActive={pathname===item.href}>{item.children}</NavbarItem>
