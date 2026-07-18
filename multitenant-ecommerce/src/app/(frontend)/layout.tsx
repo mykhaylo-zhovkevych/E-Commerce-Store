@@ -10,6 +10,7 @@ import SearchFilters from "@/app/(frontend)/search-filters";
 import {TRPCReactProvider} from "@/trpc/client";
 import {getQueryClient, trpc} from "@/trpc/server";
 import {Suspense} from "react";
+import {Toaster} from "@/components/ui/sonner";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -64,7 +65,9 @@ export default async function RootLayout({
             <Suspense fallback={<p>Loading...</p>}>
               <SearchFilters />
             </Suspense>
-            <main className="flex-1 bg-[#F4F4F0]">{children}</main>
+            <main className="flex-1 bg-[#F4F4F0]">{children}
+            <Toaster />
+            </main>
           </HydrationBoundary>
         </TRPCReactProvider>
         <Footer />
