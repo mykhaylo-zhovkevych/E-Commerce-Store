@@ -3,7 +3,7 @@ import {TRPCError} from "@trpc/server";
 import { headers as getHeaders, cookies as getCookies } from "next/headers";
 import { z } from "zod";
 import {AUTH_COOKIE} from "../../../../../public/constance";
-import {registerSchema} from "@/app/modules/auth/schemas";
+import {loginSchema, registerSchema} from "@/app/modules/auth/schemas";
 
 const authRouter = createTRPCRouter({
     session: baseProcedure.query(async ({ ctx }) => {
@@ -19,6 +19,24 @@ const authRouter = createTRPCRouter({
     register: baseProcedure.input(registerSchema)
 // input is the zod's validation above
         .mutation(async ({ input, ctx }) => {
+            const existingData = await ctx.payload.find({
+                collection: "users",
+                limit: 1,
+                where: {
+                    username: {
+                        equals: input.username,
+                    },
+                },
+            });
+            const existingUser = existingData.docs[0];
+
+            if (existingUser) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Username allready taken",
+                });
+            }
+
             await ctx.payload.create({
                 collection: "users",
                 data: {
@@ -53,12 +71,7 @@ const authRouter = createTRPCRouter({
             });
 
         }),
-    login: baseProcedure.input(z.object({
-        email: z.string().email(),
-        password: z.string().min(8).max(100),
-        username: z.string().min(3, "username must be at least 3 caracteres").max(63, "username must be less than 63 characters").regex(
-            /^[a-z0-9][a-z0-9-]*[a-z0-9]$/, "user can contain only lowercase latters, number adn hyphens. It must start and end with a letter or number").refine((val) => !val.includes("--"), "Username cannot contain consecutive hyphens").transform((val) => val.toLowerCase()),
-    }))
+    login: baseProcedure.input(loginSchema)
         // input is the zod's validation above
         .mutation(async ({ input, ctx }) => {
             const data = await ctx.payload.login({

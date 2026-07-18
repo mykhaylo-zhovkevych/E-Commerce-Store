@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {useTRPC} from "@/trpc/client";
+import {useRouter} from "next/navigation";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -31,6 +32,8 @@ const poppins = Poppins({
 });
 
 export const SignUpView = () => {
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof registerSchema>>({
         mode: "all",
         resolver: zodResolver(registerSchema),
@@ -51,6 +54,9 @@ export const SignUpView = () => {
     const trpc = useTRPC();
     const register = useMutation(trpc.auth.register.mutationOptions({onError: (error) => {
             toast.error(error.message);
+        },
+        onSuccess: () => {
+        router.push("/");
         }}
     ));
 
@@ -141,8 +147,12 @@ export const SignUpView = () => {
                     </form>
                 </Form>
             </div>
-            <div className="h-screen w-full lg:col-span-2 hidden lg:block">
-                Background column
+            <div className="h-screen w-full lg:col-span-2 hidden lg:block" style={{
+                backgroundImage: "url('/auth-bg.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+            }}>
+                {/*Background column*/}
             </div>
         </div>
     );
