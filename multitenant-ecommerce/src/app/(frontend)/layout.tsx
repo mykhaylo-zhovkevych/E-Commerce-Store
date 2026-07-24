@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 // import configPromise from "@payload-config";
 // import { getPayload } from "payload";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import {Suspense} from "react";
 import "../globals.css";
-import Navbar from "@/app/(frontend)/Navbar";
-import Footer from "@/app/(frontend)/Footer";
-import SearchFilters from "@/app/(frontend)/search-filters";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import Navbar from "@/app/modules/home/ui/components/Navbar";
+import Footer from "@/app/modules/home/ui/components/Footer";
+import SearchFilters from "@/app/modules/home/ui/components/search-filters";
 import {TRPCReactProvider} from "@/trpc/client";
 import {getQueryClient, trpc} from "@/trpc/server";
-import {Suspense} from "react";
 import {Toaster} from "@/components/ui/sonner";
 
 const dmSans = DM_Sans({

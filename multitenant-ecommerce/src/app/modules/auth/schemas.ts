@@ -1,8 +1,3 @@
-import {baseProcedure} from "@/trpc/init";
-import {TRPCError} from "@trpc/server";
-import {cookies as getCookies} from "next/dist/server/request/cookies";
-import {AUTH_COOKIE} from "../../../../public/constance";
-
 import z from "zod";
 
 export const registerSchema =

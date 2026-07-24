@@ -8,7 +8,7 @@ import {MenuIcon} from "lucide-react";
 
 import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
-import {NavbarSidebarLeft} from "@/app/(frontend)/NavbarSidebarLeft";
+import {NavbarSidebarLeft} from "@/app/modules/home/ui/components/NavbarSidebarLeft";
 import {useTRPC} from "@/trpc/client";
 import {useQuery} from "@tanstack/react-query";
 
