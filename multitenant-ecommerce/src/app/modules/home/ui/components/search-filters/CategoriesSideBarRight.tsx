@@ -3,7 +3,7 @@
 import {Sheet, SheetContent, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Button} from "@/components/ui/button";
-import {getCategoriesHref} from "@/app/(frontend)/search-filters/category-navigation";
+import {getCategoriesHref} from "@/app/modules/home/ui/components/search-filters/hooks/category-navigation";
 import {useTRPC} from "@/trpc/client";
 import {useSuspenseQuery} from "@tanstack/react-query";
 
@@ -34,7 +34,7 @@ export function CategoriesSideBarRight() {
                         {data.map((category) => (
                             <Link
                                 key={category.id}
-                                onClick={() => setSidebarOpen(true)}
+                                onClick={() => setSidebarOpen(false)}
                                 href={getCategoriesHref(category.slug)}
                                 className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center text-base font-medium"
                             >

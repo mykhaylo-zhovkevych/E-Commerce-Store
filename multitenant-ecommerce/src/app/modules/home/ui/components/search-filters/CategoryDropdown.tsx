@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-import {useDropdownPosition} from "@/app/(frontend)/search-filters/use-dropdown-position";
-import SubcategoryMenu from "@/app/(frontend)/search-filters/SubcategoryMenu";
-import {getCategoriesHref} from "@/app/(frontend)/search-filters/category-navigation";
+import {useDropdownPosition} from "@/app/modules/home/ui/components/search-filters/hooks/use-dropdown-position";
+import SubcategoryMenu from "@/app/modules/home/ui/components/search-filters/SubcategoryMenu";
+import {getCategoriesHref} from "@/app/modules/home/ui/components/search-filters/hooks/category-navigation";
 import type {CategoriesGetManyOutputSingle} from "@/app/modules/categories/types";
 
 import { useRouter } from "next/navigation";

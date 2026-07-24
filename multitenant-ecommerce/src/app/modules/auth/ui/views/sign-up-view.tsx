@@ -5,7 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 import z from "zod";
 
 import { toast } from "sonner";
-import { useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ const poppins = Poppins({
 
 export const SignUpView = () => {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const form = useForm<z.infer<typeof registerSchema>>({
         mode: "all",
@@ -55,8 +56,9 @@ export const SignUpView = () => {
     const register = useMutation(trpc.auth.register.mutationOptions({onError: (error) => {
             toast.error(error.message);
         },
-        onSuccess: () => {
-        router.push("/");
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(trpc.auth.session.queryFilter())
+            router.push("/");
         }}
     ));
 

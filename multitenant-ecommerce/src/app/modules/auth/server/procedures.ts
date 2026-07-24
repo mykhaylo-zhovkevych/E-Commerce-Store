@@ -1,9 +1,8 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import {TRPCError} from "@trpc/server";
-import { headers as getHeaders, cookies as getCookies } from "next/headers";
-import { z } from "zod";
-import {AUTH_COOKIE} from "../../../../../public/constance";
+import { headers as getHeaders } from "next/headers";
 import {loginSchema, registerSchema} from "@/app/modules/auth/schemas";
+import {generateAuthCookie} from "@/app/modules/auth/utils";
 
 const authRouter = createTRPCRouter({
     session: baseProcedure.query(async ({ ctx }) => {
@@ -12,12 +11,12 @@ const authRouter = createTRPCRouter({
 
         return session;
     }),
-    logout: baseProcedure.mutation(async () => {
-        const cookies = await getCookies();
-        cookies.delete(AUTH_COOKIE);
-    }),
+    // logout: baseProcedure.mutation(async () => {
+    //     const cookies = await getCookies();
+    //     cookies.delete(AUTH_COOKIE);
+    // }),
     register: baseProcedure.input(registerSchema)
-// input is the zod's validation above
+        // input is the zod's validation above
         .mutation(async ({ input, ctx }) => {
             const existingData = await ctx.payload.find({
                 collection: "users",
@@ -62,14 +61,6 @@ const authRouter = createTRPCRouter({
                 });
             }
 
-            const cookies = await getCookies();
-            cookies.set({
-                name: AUTH_COOKIE,
-                value: data.token,
-                httpOnly: true,
-                path: "/",
-            });
-
         }),
     login: baseProcedure.input(loginSchema)
         // input is the zod's validation above
@@ -88,15 +79,9 @@ const authRouter = createTRPCRouter({
                 });
             }
 
-            const cookies = await getCookies();
-            cookies.set({
-                name: AUTH_COOKIE,
-                value: data.token,
-                httpOnly: true,
-                // path: "/",
-                // sameSite: "lax",
-                // secure: process.env.NODE_ENV === "production",
-                // // TODO: cross domain cookies sharing, dont do this
+            await generateAuthCookie({
+                prefix: ctx.payload.config.cookiePrefix,
+                value: data.token
             });
             return data;
         }),

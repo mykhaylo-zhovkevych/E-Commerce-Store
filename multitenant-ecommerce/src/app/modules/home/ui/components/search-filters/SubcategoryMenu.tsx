@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {CategoryCustome} from "@/app/(frontend)/types";
-import { getCategoriesHref } from "@/app/(frontend)/search-filters/category-navigation";
+import { getCategoriesHref } from "@/app/modules/home/ui/components/search-filters/hooks/category-navigation";
 
 interface Props {
     category: CategoryCustome;
