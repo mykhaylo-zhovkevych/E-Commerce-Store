@@ -59,8 +59,8 @@ export default async function RootLayout({
       className={`${dmSans.className} antialiased`}
     >
       <body className="min-h-screen flex flex-col">
-        <Navbar />
         <TRPCReactProvider>
+          <Navbar />
           <HydrationBoundary state={dehydrate(queryClient)}>
             <Suspense fallback={<p>Loading...</p>}>
               <SearchFilters />

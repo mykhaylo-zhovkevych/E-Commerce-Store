@@ -2,10 +2,12 @@
 
 import { Poppins } from "next/font/google";
 import { useForm, useWatch } from "react-hook-form";
+import {useRouter} from "next/navigation";
 import z from "zod";
-
 import { toast } from "sonner";
-import { useMutation} from "@tanstack/react-query";
+import Link from "next/link";
+
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,10 +22,9 @@ import {
     FormDescription,
     FormMessage
 } from "@/components/ui/form";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+// import {useTRPC} from "@/trpc/client";
 import {useTRPC} from "@/trpc/client";
-import {useRouter} from "next/navigation";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -32,6 +33,7 @@ const poppins = Poppins({
 
 export const SignInView = () => {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const form = useForm<z.infer<typeof loginSchema>>({
         mode: "all",
@@ -39,18 +41,19 @@ export const SignInView = () => {
         defaultValues: {
             email: "",
             password: "",
-            username: "",
         }
     });
 
     const trpc = useTRPC();
-    const login = useMutation(trpc.auth.login.mutationOptions({onError: (error) => {
+    const login = useMutation(trpc.auth.login.mutationOptions(
+        {onError: (error) => {
             toast.error(error.message);
         },
-        onSuccess: () => {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(trpc.auth.session.queryFilter())
             router.push("/");
-        }}
-    ));
+        }})
+    );
 
     const onSubmit = (values: z.infer<typeof loginSchema>) => { login.mutate(values) };
 

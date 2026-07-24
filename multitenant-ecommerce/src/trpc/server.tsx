@@ -9,6 +9,7 @@ import { appRouter } from './routers/_app';
 // IMPORTANT: Create a stable getter for the query client that
 //            will return the same client during the same request.
 export const getQueryClient = cache(makeQueryClient);
+export const caller = appRouter.createCaller(createTRPCContext);
 
 export const trpc = createTRPCOptionsProxy({
     ctx: createTRPCContext,

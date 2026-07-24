@@ -37,7 +37,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "../../JS_CORE/modul_294/zusätzliche_aufgaben/Aufgabe02/code.js"
   ],
   "exclude": [
     "node_modules"
