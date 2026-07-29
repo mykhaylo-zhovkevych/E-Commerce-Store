@@ -40,6 +40,9 @@ import type {
 
 export const Categories: CollectionConfig = {
     slug: 'categories',
+    admin: {
+        useAsTitle: "alt",
+    },
     access: {
         read: () => true,
     },

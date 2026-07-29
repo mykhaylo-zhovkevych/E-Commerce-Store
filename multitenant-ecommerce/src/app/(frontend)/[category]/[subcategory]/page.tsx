@@ -1,43 +1,26 @@
-import config from "@payload-config";
+import {Suspense} from "react";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
+import config from "@payload-config";
+import {caller, getQueryClient, trpc} from "@/trpc/server";
+import {dehydrate, HydrationBoundary} from "@tanstack/react-query";
+import {ProductList,ProductListSkeleton} from "@/app/modules/products/ui/components/product-list";
 
 const Page = async ({params}: {
-    params: Promise<{ category: string; subcategory: string }>;
+    params: Promise<{ subcategory: string }>;
 }) => {
-    const { category, subcategory } = await params;
-    const payload = await getPayload({ config });
-
-    const parentResult = await payload.find({
-        collection: "categories",
-        limit: 1,
-        where: {
-            slug: { equals: category },
-            parent: { exists: false },
-        },
-    });
-    const parent = parentResult.docs[0];
-
-    if (!parent) {
-        notFound();
-    }
-
-    const subcategoryResult = await payload.find({
-        collection: "categories",
-        limit: 1,
-        where: {
-            slug: { equals: subcategory },
-            parent: { equals: parent.id },
-        },
-    });
-
-    if (subcategoryResult.docs.length === 0) {
-        notFound();
-    }
+    const { subcategory } = await params;
+    const queryClient = getQueryClient();
+    void queryClient.prefetchQuery(trpc.products.getMany.queryOptions({category: subcategory}));
 
     return (
         <div>
-        test
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <Suspense fallback={<ProductListSkeleton />}>
+
+                    <ProductList category={subcategory} />
+                </Suspense>
+            </HydrationBoundary>
         </div>
     );
 };
