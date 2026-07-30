@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
-// import configPromise from "@payload-config";
-// import { getPayload } from "payload";
 import {Suspense} from "react";
 import "../globals.css";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import Navbar from "@/app/modules/home/ui/components/Navbar";
 import Footer from "@/app/modules/home/ui/components/Footer";
@@ -59,6 +58,7 @@ export default async function RootLayout({
       className={`${dmSans.className} antialiased`}
     >
       <body className="min-h-screen flex flex-col">
+      <NuqsAdapter>
         <TRPCReactProvider>
           <Navbar />
           <HydrationBoundary state={dehydrate(queryClient)}>
@@ -71,6 +71,7 @@ export default async function RootLayout({
           </HydrationBoundary>
         </TRPCReactProvider>
         <Footer />
+      </NuqsAdapter>
       </body>
     </html>
   );
