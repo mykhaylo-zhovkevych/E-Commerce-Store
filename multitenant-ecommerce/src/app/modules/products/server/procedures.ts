@@ -18,6 +18,7 @@ export const productsRouter = createTRPCRouter({
                 const categoriesData = await ctx.payload.find({
                     collection: "categories",
                     limit: 1,
+                    depth: 1,
                     pagination: false,
                     where: {
                         slug: {
@@ -26,20 +27,17 @@ export const productsRouter = createTRPCRouter({
                     }
                 });
 
-                const category = categoriesData.docs[0];
-
-                if (category) {
-                    where["category.slug"] = {
-                        equals: category.slug,
-                    }
-                }
+                const subcategories = categoriesData.docs[0]?.subcategories?.docs?.flatMap((doc) => typeof doc === "string" ? [] : doc.slug,) ?? [];
+                where["category.slug"] = {
+                    in: [input.category, ...subcategories],
+                };
             }
 
             const cateData = await ctx.payload.find({
                 collection: "products",
                 depth: 1,
                 sort: "alt",
-                where, // must be assigned
+                where,
             });
 
         // await new Promise((resolve) => setTimeout(resolve, 5000));
