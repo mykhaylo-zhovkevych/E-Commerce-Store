@@ -6,6 +6,9 @@ import {useTRPC} from "@/trpc/client";
 import {useSuspenseQuery} from "@tanstack/react-query";
 import type { ProductsGetManyOutput } from "@/app/modules/products/types";
 import ProductFilter from "@/app/modules/products/ui/components/ProdectFilter";
+import {loadProductFilters, useProductFilter} from "@/app/modules/products/hooks/use-product-filters";
+import { SearchParams } from "next/dist/server/request/search-params";
+
 
 interface Props {
     category?: string;
@@ -24,8 +27,10 @@ const renderContent = (data: ProductsGetManyOutput) => {
 };
 
 export const ProductList = ({category}: Props) => {
+    const [filters] = useProductFilter();
+
     const trpc = useTRPC();
-    const { data } = useSuspenseQuery(trpc.products.getMany.queryOptions({category}));
+    const { data } = useSuspenseQuery(trpc.products.getMany.queryOptions({category, ...filters}));
 
     return renderContent(data);
 };

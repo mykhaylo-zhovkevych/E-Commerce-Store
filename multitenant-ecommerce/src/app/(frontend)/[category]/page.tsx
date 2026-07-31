@@ -7,26 +7,21 @@ import {dehydrate, HydrationBoundary} from "@tanstack/react-query";
 import {ProductList,ProductListSkeleton} from "@/app/modules/products/ui/components/ProductList";
 import {cn} from "@/lib/utils";
 import ProductFilter from "@/app/modules/products/ui/components/ProdectFilter";
+import { SearchParams } from "next/dist/server/request/search-params";
+import {loadProductFilters} from "@/app/modules/products/hooks/use-product-filters";
 
-const Page = async ({params}: {
+
+const Page = async ({params, searchParams}: {
         params: Promise<{ category: string }>;
+        searchParams: Promise<SearchParams>;
 }) => {
     const { category } = await params;
-    // const payload = await getPayload({ config });
-    //
-    //
-    //
-    // const result = await payload.find({
-    //     collection: "categories",
-    //     limit: 1,
-    //     where: {
-    //         slug: { equals: category },
-    //         parent: { exists: false },
-    //     },
-    // });
+    const filters = await loadProductFilters(searchParams);
+
+    console.log(JSON.stringify(filters), "This is from RSC");
 
     const queryClient = getQueryClient();
-    void queryClient.prefetchQuery(trpc.products.getMany.queryOptions({category}));
+    void queryClient.prefetchQuery(trpc.products.getMany.queryOptions({category, ...filters}));
 
     // if (result.docs.length === 0) {
     //     notFound();

@@ -15,16 +15,15 @@ export const productsRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const where: Where = {};
 
-            // if (input.minPrice) {
-            //     where.
-            // }
             if (input.minPrice) {
                 where.price = {
+                    ...where.price,
                     greater_than_equal: input.minPrice,
                 }
             }
             if (input.maxPrice) {
                 where.price = {
+                    ...where.price,
                     less_than_equal: input.maxPrice,
                 }
             }
@@ -54,9 +53,6 @@ export const productsRouter = createTRPCRouter({
                 sort: "alt",
                 where,
             });
-
-        // await new Promise((resolve) => setTimeout(resolve, 5000));
-
 
         return cateData.docs;
     }),
