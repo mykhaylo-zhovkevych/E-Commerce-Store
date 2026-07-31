@@ -29,6 +29,15 @@ export default buildConfig({
   },
   db: mongooseAdapter({
     url: process.env.DATABASE_URL || "",
+    connectOptions: {
+      // Recycle idle sockets before common router/NAT timeouts leave stale
+      // connections in the pool. The driver reconnects them on demand.
+      maxIdleTimeMS: 60_000,
+      serverSelectionTimeoutMS: 30_000,
+      connectTimeoutMS: 15_000,
+      retryReads: true,
+      retryWrites: true,
+    },
   }),
   sharp,
   plugins: [],
