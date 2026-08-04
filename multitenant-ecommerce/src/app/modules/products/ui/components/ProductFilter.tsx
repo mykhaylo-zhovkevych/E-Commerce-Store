@@ -6,6 +6,9 @@ import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {PriceFilter} from "@/app/modules/products/ui/components/helpers/PriceFilter";
 import {useProductFilter} from "@/app/modules/products/hooks/use-product-filters";
+import {TagsFilter} from "@/app/modules/products/ui/components/TagsFilter";
+
+
 
 interface ProductFilterProps {
     title: string;
@@ -31,6 +34,20 @@ const ProductFilter = ({title, className, children}: ProductFilterProps) => {
 export const ProductFilters = () => {
     const [filters, setFilters] = useProductFilter();
 
+    const hasAnyFilters = Object.entries(filters).some(([_, value]) => {
+        if (typeof value === "string") {
+            return value !== "";
+        }
+        return value !== null;
+    })
+
+    const onClear = () => {
+        setFilters({
+            minPrice: "",
+            maxPrice: "",
+        });
+    };
+
     // Keyof turns object type into a union of its property-name
     const onChange = (key: keyof typeof filters, value: unknown) => {
         setFilters({...filters, [key]: value});
@@ -41,12 +58,20 @@ export const ProductFilters = () => {
             <div className="p-4 border-b flex items-center justify-between">
                 <span className="font-bold text-xl">Filter</span>
                 <br/>
-                <Button className="underline" onClick={() =>  {}} type="button">
-                    Clear
-                </Button>
+                {hasAnyFilters &&
+                    <Button className="underline" onClick={() =>  onClear()} type="button">
+                        Clear
+                    </Button>
+                }
             </div>
-            <ProductFilter title="Price" className="border-b-0">
+            <ProductFilter title="Price">
                 <PriceFilter onMinPriceChange={(value) => onChange("minPrice", value)} onMaxPriceChange={(value) => onChange("maxPrice", value)} minPrice={filters.minPrice} maxPrice={filters.maxPrice}  />
+            </ProductFilter>
+            <ProductFilter title="Tags" className="border-b-0">
+                <TagsFilter
+                    value={filters.tags}
+                    onChange={(value: string[]) => onChange("tags", value)}
+                />
             </ProductFilter>
         </div>
     )

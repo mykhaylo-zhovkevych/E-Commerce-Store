@@ -1,6 +1,6 @@
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
-import { createTRPCContext } from '../../../../trpc/init';
-import { appRouter } from '../../../../trpc/routers/_app';
+import { createTRPCContext } from '@/trpc/init';
+import { appRouter } from '@/trpc/routers/_app';
 // In order the client can have possibility for the ability of fetching the backend
 // Because the TRPC Backend has direct access to the db, whilst client not
 const handler = (req: Request) =>

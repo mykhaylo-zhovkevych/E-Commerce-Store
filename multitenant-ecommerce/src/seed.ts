@@ -192,6 +192,17 @@ const categories: CategorySeed[] = [
     },
 ];
 
+const tags: string[] = [
+    "trending",
+    "new-release",
+    "bestseller",
+    "on-sale",
+    "beginner-friendly",
+    "advanced",
+    "editors-pick",
+    "limited-time",
+];
+
 const defaultImagePath = path.resolve(process.cwd(), "seed-assets/category-placeholder.avif",);
 
 const resolveImagePath = (): string => {
@@ -241,16 +252,27 @@ const seed = async (): Promise<void> => {
             });
         }
     }
+
+    for (const tag of tags) {
+        console.log(`Creating tag: ${tag}`);
+
+        await payload.create({
+            collection: "tags",
+            data: {
+                name: tag,
+            },
+        });
+    }
 };
 
 try {
-    console.log("Starting category seed...");
+    console.log("Starting seed...");
 
     await seed();
 
-    console.log("Categories seeded successfully.");
+    console.log("Seed completed successfully.");
     process.exit(0);
 } catch (error) {
-    console.error("Category seed failed:", error);
+    console.error("Seed failed:", error);
     process.exit(1);
 }
