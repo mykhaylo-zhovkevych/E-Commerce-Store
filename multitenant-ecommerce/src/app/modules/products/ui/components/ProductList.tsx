@@ -5,7 +5,7 @@ import { EmptyState } from "./EmptyState";
 import {useTRPC} from "@/trpc/client";
 import {useSuspenseQuery} from "@tanstack/react-query";
 import type { ProductsGetManyOutput } from "@/app/modules/products/types";
-import ProductFilter from "@/app/modules/products/ui/components/ProdectFilter";
+import ProductFilter from "@/app/modules/products/ui/components/ProductFilter";
 import {loadProductFilters, useProductFilter} from "@/app/modules/products/hooks/use-product-filters";
 import { SearchParams } from "next/dist/server/request/search-params";
 
