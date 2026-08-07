@@ -211,6 +211,7 @@ export interface Product {
    * in USD
    */
   price: number;
+  trendScore?: number | null;
   category?: (string | null) | Category;
   tags?: (string | Tag)[] | null;
   image?: (string | null) | Media;
@@ -386,6 +387,7 @@ export interface ProductsSelect<T extends boolean = true> {
   name?: T;
   description?: T;
   price?: T;
+  trendScore?: T;
   category?: T;
   tags?: T;
   image?: T;

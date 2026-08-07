@@ -2,12 +2,12 @@
 
 import {useState} from "react";
 import {ChevronDownIcon, ChevronRightIcon} from "lucide-react";
+
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {PriceFilter} from "@/app/modules/products/ui/components/helpers/PriceFilter";
-import {useProductFilter} from "@/app/modules/products/hooks/use-product-filters";
 import {TagsFilter} from "@/app/modules/products/ui/components/TagsFilter";
-
+import {useProductFilter} from "@/app/modules/products/search-params";
 
 
 interface ProductFilterProps {
@@ -34,23 +34,30 @@ const ProductFilter = ({title, className, children}: ProductFilterProps) => {
 export const ProductFilters = () => {
     const [filters, setFilters] = useProductFilter();
 
-    const hasAnyFilters = Object.entries(filters).some(([_, value]) => {
+    const hasAnyFilters = Object.entries(filters).some(([key, value]) => {
+
+        if (key === "sort") return false;
+
+        if (Array.isArray(value)) {
+            return value.length > 0;
+        }
+
         if (typeof value === "string") {
             return value !== "";
         }
         return value !== null;
     })
 
-    const onClear = () => {
-        setFilters({
-            minPrice: "",
-            maxPrice: "",
+    const onClear = async () => { await setFilters({
+            minPrice: null,
+            maxPrice: null,
+            tags: null,
         });
     };
 
     // Keyof turns object type into a union of its property-name
-    const onChange = (key: keyof typeof filters, value: unknown) => {
-        setFilters({...filters, [key]: value});
+    const onChange = async (key: keyof typeof filters, value: unknown) => {
+        await setFilters({...filters, [key]: value});
     };
 
     return (
