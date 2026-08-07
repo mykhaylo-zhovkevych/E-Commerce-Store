@@ -8,8 +8,8 @@ import {ProductList,ProductListSkeleton} from "@/app/modules/products/ui/compone
 import {cn} from "@/lib/utils";
 import ProductFilter from "@/app/modules/products/ui/components/ProductFilter";
 import { SearchParams } from "next/dist/server/request/search-params";
-import {loadProductFilters} from "@/app/modules/products/hooks/use-product-filters";
-
+import { loadProductFilters} from "@/app/modules/products/search-params";
+import {ProductSort} from "@/app/modules/products/ui/components/product-sort";
 
 const Page = async ({params, searchParams}: {
         params: Promise<{ category: string }>;
@@ -35,9 +35,7 @@ const Page = async ({params, searchParams}: {
                         <p className="text-2xl font-medium ">
                             Curated for you
                         </p>
-                        <p>
-                            Sorting
-                        </p>
+                        <ProductSort />
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-6 gap-y-6 gap-x-10">
                         <div className="lg:col-span-2 xl:col-span-2">
@@ -48,7 +46,6 @@ const Page = async ({params, searchParams}: {
                         </div>
                         <div className={cn("border p-2", "lg:col-span-4 xl:col-span-4")}>
                                 <Suspense fallback={<ProductListSkeleton />}>
-
                                     <ProductList category={category} />
                                 </Suspense>
                         </div>

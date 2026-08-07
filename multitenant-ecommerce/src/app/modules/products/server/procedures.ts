@@ -1,7 +1,8 @@
 import z from "zod"
-import type {Where} from "payload";
+import type {Where, Sort} from "payload";
 
 import {baseProcedure, createTRPCRouter} from "@/trpc/init";
+import {sortValues} from "@/app/modules/products/search-params";
 
 export const productsRouter = createTRPCRouter({
     getMany: baseProcedure
@@ -11,10 +12,19 @@ export const productsRouter = createTRPCRouter({
                 minPrice: z.string().nullable().optional(),
                 maxPrice: z.string().nullable().optional(),
                 tags: z.array(z.string()).nullable().optional(),
+                sort: z.enum(sortValues).nullable().optional(),
             }),
         )
         .query(async ({ ctx, input }) => {
             const where: Where = {};
+
+            // Curated and Hot and new use newest-first by default.
+            let sort: Sort = "-createdAt";
+
+            if (input.sort === "trending") {
+                // Higher score first: 100 appears before 75.
+                sort = "-trendScore";
+            }
 
             if (input.minPrice) {
                 where.price = {
@@ -57,8 +67,8 @@ export const productsRouter = createTRPCRouter({
             const cateData = await ctx.payload.find({
                 collection: "products",
                 depth: 1,
-                sort: "alt",
                 where,
+                sort,
             });
 
         return cateData.docs;

@@ -21,6 +21,12 @@ export const Products: CollectionConfig = {
             }
         },
         {
+            // Temporary test data: higher scores appear first
+            name: "trendScore",
+            type: "number",
+            defaultValue: 0,
+        },
+        {
             name: "category",
             type: "relationship",
             relationTo: "categories",
