@@ -4,6 +4,7 @@ import {getQueryClient, trpc} from "@/trpc/server";
 import {dehydrate, HydrationBoundary} from "@tanstack/react-query";
 import { loadProductFilters} from "@/app/modules/products/search-params";
 import ProductListView from "@/app/modules/products/ui/components/views/product-view";
+import {DEFAULT_LIMIT} from "@/constants/constants";
 
 const Page = async ({params, searchParams}: {
         params: Promise<{ category: string }>;
@@ -15,7 +16,14 @@ const Page = async ({params, searchParams}: {
     console.log(JSON.stringify(filters), "This is from RSC");
 
     const queryClient = getQueryClient();
-    void queryClient.prefetchQuery(trpc.products.getMany.queryOptions({category, ...filters}));
+    void queryClient.prefetchInfiniteQuery(trpc.products.getMany.infiniteQueryOptions(
+        {...filters, category, limit: DEFAULT_LIMIT},
+        {
+            getNextPageParam: (lastPage) => {
+                return lastPage.docs.length > 0 ? lastPage.nextPage : undefined;
+            },
+        }
+    ));
 
     // if (result.docs.length === 0) {
     //     notFound();

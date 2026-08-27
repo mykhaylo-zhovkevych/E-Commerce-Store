@@ -10,6 +10,9 @@ import { Media } from "./collections/Media";
 import { Categories } from "./collections/Categories";
 import {Products} from "./collections/Products";
 import {Tags} from "@/collections/Tags";
+import {Tenants} from "@/collections/Tenants";
+import {multiTenantPlugin} from "@payloadcms/plugin-multi-tenant";
+import {payloadCloudPlugin as payLoadCloudPlugin} from "@payloadcms/payload-cloud";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -21,7 +24,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories, Products, Tags],
+  collections: [Users, Media, Categories, Products, Tags, Tenants],
   editor: lexicalEditor(),
   cookiePrefix: "linkkroad",
   secret: process.env.PAYLOAD_SECRET || "",
@@ -41,5 +44,17 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  plugins: [
+      payLoadCloudPlugin(),
+      multiTenantPlugin({
+        collections: {
+          products: {},
+        },
+        tenantsArrayField: {
+          includeDefaultField: false
+        },
+        userHasAccessToAllTenants: (user) =>
+          user?.collection === "users" && Boolean(user.roles?.includes("super-admin"))
+      }),
+  ],
 });

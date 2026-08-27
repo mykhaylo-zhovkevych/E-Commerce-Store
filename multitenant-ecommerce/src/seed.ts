@@ -218,11 +218,42 @@ const resolveImagePath = (): string => {
 const seed = async (): Promise<void> => {
     const payload = await getPayload({ config });
 
+    // A tenant can't be created from the admin UI because `stripeAccountId` is
+    // required + readOnly (normally set by Stripe onboarding), so seed one here.
+    const tenant = await payload.create({
+        collection: "tenants",
+        // Freshly-dropped collections are (re)created + indexed on first insert.
+        // MongoDB rejects that DDL inside a transaction with a WriteConflict
+        // ("Collection namespace ... is already in use"), so seed without one.
+        disableTransaction: true,
+        data: {
+            name: "Demo Store",
+            slug: "demo",
+            stripeAccountId: "test",
+            stripeDetailsSubmitted: true,
+        },
+    });
+
+    await payload.create({
+        collection: "users",
+        disableTransaction: true,
+        data: {
+            email: "admin@demo.com",
+            password: "demodemo",
+            roles: ["super-admin"],
+            username: "admin",
+            // Attach the tenant so the admin tenant-selector auto-picks it and
+            // new products get a tenant without any manual step.
+            tenants: [{ tenants: tenant.id }],
+        }
+    })
+
     for (const category of categories) {
         console.log(`Creating parent category: ${category.slug}`);
 
         const parentCategory = await payload.create({
             collection: "categories",
+            disableTransaction: true,
 
             // Required because "categories" is an upload collection
             filePath: resolveImagePath(),
@@ -240,6 +271,7 @@ const seed = async (): Promise<void> => {
 
             await payload.create({
                 collection: "categories",
+                disableTransaction: true,
 
                 // Every subcategory is also a document in the upload collection
                 filePath: resolveImagePath(),
@@ -258,6 +290,7 @@ const seed = async (): Promise<void> => {
 
         await payload.create({
             collection: "tags",
+            disableTransaction: true,
             data: {
                 name: tag,
             },

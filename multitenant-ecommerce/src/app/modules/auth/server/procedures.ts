@@ -36,12 +36,29 @@ const authRouter = createTRPCRouter({
                 });
             }
 
+            const tenant = await ctx.payload.create({
+                collection: "tenants",
+                data: {
+                    name: input.username,
+                    // Because username has to be unique
+                    slug: input.username,
+                    email: input.email,
+                    stripeAccountId: "test"
+                }
+            })
+
             await ctx.payload.create({
                 collection: "users",
                 data: {
                     email: input.email,
                     username: input.username,
                     password: input.password, // payload handels the hashing
+                    // explain to me one tentan per one user?
+                    tenants: [
+                        {
+                            tenants: tenant.id
+                        },
+                    ],
                 },
             });
 

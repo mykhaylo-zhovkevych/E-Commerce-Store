@@ -1,25 +1,33 @@
-"use client"
+import { SearchParams } from "next/dist/server/request/search-params";
 
-import { useQuery} from "@tanstack/react-query";
-import { useTRPC} from "@/trpc/client";
+import { getQueryClient, trpc } from "@/trpc/server";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { loadProductFilters } from "@/app/modules/products/search-params";
+import ProductListView from "@/app/modules/products/ui/components/views/product-view";
+import { DEFAULT_LIMIT } from "@/constants/constants";
 
+const Page = async ({ searchParams }: { searchParams: Promise<SearchParams> }) => {
+    const filters = await loadProductFilters(searchParams);
 
-export default function Home() {
-    const trpc = useTRPC();
-
-    const { data, isPending, error } = useQuery(
-        trpc.categories.getMany.queryOptions()
+    const queryClient = getQueryClient();
+    // so the "All" landing page shows every product
+    void queryClient.prefetchInfiniteQuery(
+        trpc.products.getMany.infiniteQueryOptions(
+            { ...filters, limit: DEFAULT_LIMIT },
+            {
+                getNextPageParam: (lastPage) =>
+                    lastPage.docs.length > 0 ? lastPage.nextPage : undefined,
+            },
+        ),
     );
 
-    if (isPending) return <div>Loading...</div>;
-    if (error) return <div>Something is went wrong</div>;
-
-    // const queryClient = getQueryClient();
-    // const categories = await queryClient.fetchQuery(trpc.categories.getMany.queryOptions())
-
     return (
-        <pre>
-            {JSON.stringify(data, null, 2)}
-        </pre>
-    )
-}
+        <div>
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <ProductListView />
+            </HydrationBoundary>
+        </div>
+    );
+};
+
+export default Page;
