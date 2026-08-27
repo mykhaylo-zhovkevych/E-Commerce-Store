@@ -11,9 +11,10 @@ import {ProductCardSkeleton} from "@/app/modules/products/ui/components/product-
 
 interface Props {
     category?: string;
+    tenantSlug?: string;
 }
 
-export const ProductList = ({category}: Props) => {
+export const ProductList = ({category, tenantSlug}: Props) => {
     const [filters] = useProductFilter();
 
     const trpc = useTRPC();
@@ -22,7 +23,7 @@ export const ProductList = ({category}: Props) => {
         isFetchingNextPage,
         fetchNextPage
     } = useSuspenseInfiniteQuery(trpc.products.getMany.infiniteQueryOptions(
-        {...filters, category, limit: DEFAULT_LIMIT},
+        {...filters, category, tenantSlug, limit: DEFAULT_LIMIT},
         {getNextPageParam: (lastPage) => {
                 return lastPage.docs.length > 0 ? lastPage.nextPage : undefined;
             },

@@ -42,7 +42,6 @@ const authRouter = createTRPCRouter({
                     name: input.username,
                     // Because username has to be unique
                     slug: input.username,
-                    email: input.email,
                     stripeAccountId: "test"
                 }
             })
