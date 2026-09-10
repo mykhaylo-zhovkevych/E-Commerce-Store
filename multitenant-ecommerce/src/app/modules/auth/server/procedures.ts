@@ -1,8 +1,45 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import {TRPCError} from "@trpc/server";
 import { headers as getHeaders } from "next/headers";
+import {APIError, AuthenticationError, LockedAuth, Payload, UnverifiedEmail} from "payload";
 import {loginSchema, registerSchema} from "@/app/modules/auth/schemas";
 import {generateAuthCookie} from "@/app/modules/auth/utils";
+
+// payload.login() throws a raw APIError on every failure (bad password ->
+// AuthenticationError/401, too many attempts -> LockedAuth/401, global
+// rateLimit -> TooManyRequests/429)
+const loginUser = async (
+    payload: Payload,
+    data: { email: string; password: string },
+) => {
+    try {
+        return await payload.login({ collection: "users", data });
+    } catch (err) {
+        if (!(err instanceof APIError)) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Something went wrong",
+                cause: err,
+            });
+        }
+
+        if (err instanceof LockedAuth) {
+            throw new TRPCError({code: "TOO_MANY_REQUESTS", message: err.message, cause: err});
+        }
+        if (err instanceof AuthenticationError) {
+            throw new TRPCError({code: "UNAUTHORIZED", message: "Invalid email or password", cause: err});
+        }
+        if (err instanceof UnverifiedEmail) {
+            throw new TRPCError({ code: "FORBIDDEN", message: "Please verify your email first", cause: err });
+        }
+
+        throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: err.isPublic ? err.message : "Something went wrong",
+            cause: err,
+        });
+    }
+};
 
 const authRouter = createTRPCRouter({
     session: baseProcedure.query(async ({ ctx }) => {
@@ -32,7 +69,7 @@ const authRouter = createTRPCRouter({
             if (existingUser) {
                 throw new TRPCError({
                     code: "BAD_REQUEST",
-                    message: "Username allready taken",
+                    message: "Username already taken",
                 });
             }
 
@@ -62,13 +99,9 @@ const authRouter = createTRPCRouter({
             });
 
             // After user register automatically login in
-
-            const data = await ctx.payload.login({
-                collection: "users",
-                data: {
-                    email: input.email,
-                    password: input.password
-                },
+            const data = await loginUser(ctx.payload, {
+                email: input.email,
+                password: input.password,
             });
             if (!data.token) {
                 throw new TRPCError({
@@ -81,12 +114,9 @@ const authRouter = createTRPCRouter({
     login: baseProcedure.input(loginSchema)
         // input is the zod's validation above
         .mutation(async ({ input, ctx }) => {
-            const data = await ctx.payload.login({
-                collection: "users",
-                data: {
-                    email: input.email,
-                    password: input.password
-                },
+            const data = await loginUser(ctx.payload, {
+                email: input.email,
+                password: input.password,
             });
             if (!data.user || !data.token) {
                 throw new TRPCError({

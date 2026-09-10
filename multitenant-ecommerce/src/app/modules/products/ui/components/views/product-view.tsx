@@ -11,7 +11,6 @@ interface PLVProps {
 
 
 export const ProductListView = ({category: cat, tenantSlug}: PLVProps) => (
-
     <div className="px-4 lg:px-12 py-8 flex flex-col gap-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:itesm-center gap-y-2 lg:gap-y-0 justify-between">
             <p className="text-2xl font-medium ">
