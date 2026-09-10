@@ -7,9 +7,25 @@ import {Media, Tenant} from "@/payload-types";
 import {DEFAULT_LIMIT} from "@/constants/constants";
 
 export const productsRouter = createTRPCRouter({
-    getMany: baseProcedure
+    getOne: baseProcedure
         .input(
             z.object({
+                id: z.string(),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            const product = await  ctx.payload.findByID({
+                collection: "products",
+                id: input.id
+            });
+
+            return {
+                ...product,
+                image: product.image as Media | null
+            }
+        }),
+    getMany: baseProcedure
+        .input(z.object({
                 cursor: z.number().default(1),
                 limit: z.number().default(DEFAULT_LIMIT),
                 category: z.string().nullable().optional(),

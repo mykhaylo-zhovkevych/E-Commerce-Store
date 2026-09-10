@@ -11,7 +11,7 @@ const handler = (req: Request) =>
         createContext: createTRPCContext,
         onError({ path, error }) {
             console.error(`[tRPC] ${path} failed:`, error);
-            console.dir(error.cause, { depth: null });
+            console.dir(error.cause, { depth: 1 });
         },
     });
 
