@@ -5,6 +5,7 @@ import {baseProcedure, createTRPCRouter} from "@/trpc/init";
 import {sortValues} from "@/app/modules/products/search-params";
 import {Media, Tenant} from "@/payload-types";
 import {DEFAULT_LIMIT} from "@/constants/constants";
+import {PluginMultiTenantTranslationKeys} from "@payloadcms/plugin-multi-tenant/translations/languages/all";
 
 export const productsRouter = createTRPCRouter({
     getOne: baseProcedure
@@ -16,12 +17,14 @@ export const productsRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const product = await  ctx.payload.findByID({
                 collection: "products",
-                id: input.id
+                id: input.id,
+                depth: 2,
             });
 
             return {
                 ...product,
-                image: product.image as Media | null
+                image: product.image as Media | null,
+                tenant: product.tenant as Tenant & { image: Media | null },
             }
         }),
     getMany: baseProcedure
