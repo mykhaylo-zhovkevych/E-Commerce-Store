@@ -2,14 +2,24 @@
 
 import {Fragment} from "react";
 import Image from "next/image";
+import Link from "next/link";
+import {LinkIcon, StarIcon} from "lucide-react";
+// Helps with Hydration errors
+import dynamic from "next/dynamic";
+
 import {useTRPC} from "@/trpc/client";
 import {useSuspenseQuery} from "@tanstack/react-query";
 import {generateTenantURL} from "@/lib/utils";
-import Link from "next/link";
 import {StarRating} from "@/components/star-rating";
 import {Button} from "@/components/ui/button";
 import {Progress} from "@/components/ui/progress";
-import {LinkIcon, StarIcon} from "lucide-react";
+
+const CartButton = dynamic(
+    () => import("@/app/modules/products/ui/components/CartButton")
+        .then((mod) => mod.CartButton),
+    {ssr: false,
+    loading: () => <Button disabled={true} className="flex-1 bg-pink-400">Add to Cart</Button>},
+);
 
 // TODO: replace with real review aggregates from the API
 const TEMP_RATING_SUMMARY = 4.5;
@@ -54,7 +64,9 @@ export const ProductViewTenant = ({ productId, tenantSlug }: PVTProps) => {
                                 <Link href={generateTenantURL(tenantSlug)} className="flex items-center gap-2">
                                     {
                                         data.tenant.image?.url && (
-                                            <Image src={data.tenant.image.url} alt={data.tenant.name} width={20} height={20} className="rounded-full border shrink-0 size-[20px]"/>
+                                            <Image src={data.tenant.image.url} alt={data.tenant.name}
+                                                   width={20}
+                                                   height={20} className="rounded-full border shrink-0 size-[20px]"/>
                                         )
                                     }
                                     <p className="text-base underline font-medium">
@@ -92,11 +104,9 @@ export const ProductViewTenant = ({ productId, tenantSlug }: PVTProps) => {
                     </div>
                     <div className="lg:col-span-2 border-t lg:border-t-0 lg:border-l">
                         <div className="flex flex-col gap-4 p-6 border-b">
-                            <div className="flex flex-row items-center gap-2">
-                                <Button variant="elevated" className="bg-pink-400">
-                                    Add to cart
-                                </Button>
-                                <Button variant="elevated" className="bg-pink-500" onClick={() => {}} disabled={false}>
+                            <div className="flex flex-row items-center gap-2 w-full" >
+                                <CartButton tenantSlug={tenantSlug} productId={productId}/>
+                                <Button variant="elevated" className="bg-pink-500 w-auto" onClick={() => {}} disabled={false}>
                                     <LinkIcon></LinkIcon>
                                 </Button>
                             </div>
