@@ -1,11 +1,31 @@
 import z from "zod"
-import type {Where, Sort} from "payload";
+import type {Payload, Sort, Where} from "payload";
 
 import {baseProcedure, createTRPCRouter} from "@/trpc/init";
 import {sortValues} from "@/app/modules/products/search-params";
 import {Media, Tenant} from "@/payload-types";
 import {DEFAULT_LIMIT} from "@/constants/constants";
 import {PluginMultiTenantTranslationKeys} from "@payloadcms/plugin-multi-tenant/translations/languages/all";
+
+// Category slug plus all its direct subcategory slugs, so filtering by a parent also matches its children.
+const getCategorySlugs = async (payload: Payload, slug: string) => {
+    const { docs } = await payload.find({
+        collection: "categories",
+        limit: 1,
+        depth: 1,
+        pagination: false,
+        where: {
+            slug: {
+                equals: slug,
+            },
+        },
+    });
+
+    const subcategories = docs[0]?.subcategories?.docs
+        ?.flatMap((doc) => (typeof doc === "string" ? [] : doc.slug)) ?? [];
+
+    return [slug, ...subcategories];
+};
 
 export const productsRouter = createTRPCRouter({
     getOne: baseProcedure
@@ -32,8 +52,8 @@ export const productsRouter = createTRPCRouter({
                 cursor: z.number().default(1),
                 limit: z.number().default(DEFAULT_LIMIT),
                 category: z.string().nullable().optional(),
-                minPrice: z.string().nullable().optional(),
-                maxPrice: z.string().nullable().optional(),
+                minPrice: z.coerce.number().nullable().optional(),
+                maxPrice: z.coerce.number().nullable().optional(),
                 tags: z.array(z.string()).nullable().optional(),
                 sort: z.enum(sortValues).nullable().optional(),
                 tenantSlug: z.string().nullable().optional(),
@@ -70,21 +90,8 @@ export const productsRouter = createTRPCRouter({
             }
 
             if (input.category) {
-                const categoriesData = await ctx.payload.find({
-                    collection: "categories",
-                    limit: 1,
-                    depth: 1,
-                    pagination: false,
-                    where: {
-                        slug: {
-                            equals: input.category,
-                        }
-                    }
-                });
-
-                const subcategories = categoriesData.docs[0]?.subcategories?.docs?.flatMap((doc) => typeof doc === "string" ? [] : doc.slug,) ?? [];
                 where["category.slug"] = {
-                    in: [input.category, ...subcategories],
+                    in: await getCategorySlugs(ctx.payload, input.category),
                 };
             }
 
@@ -94,7 +101,7 @@ export const productsRouter = createTRPCRouter({
                 };
             }
 
-            const cateData = await ctx.payload.find({
+            const productsData = await ctx.payload.find({
                 collection: "products",
                 depth: 2, // Populate "category", "image" & "image.url"
                 where,
@@ -104,8 +111,8 @@ export const productsRouter = createTRPCRouter({
             });
 
         return {
-            ...cateData,
-            docs: cateData.docs.map((doc) => ({
+            ...productsData,
+            docs: productsData.docs.map((doc) => ({
                 ...doc,
                 image: doc.image as Media | null,
                 tenant: doc.tenant as Tenant & { image: Media | null }

@@ -3,7 +3,11 @@ import {useTRPC} from "@/trpc/client";
 import {useSuspenseQuery} from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
+import {ShoppingCartIcon} from "lucide-react";
+
 import {generateTenantURL} from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {CheckoutButton} from "@/app/modules/checkout/ui/components/CheckoutButton";
 
 interface NProps {
     slug: string;
@@ -23,6 +27,7 @@ export const Navbar = ( {slug}: NProps) => {
                     )}
                     <p className="text-xl">{data.name}</p>
                 </Link>
+                <CheckoutButton hideIfEmpty={true} tenantSlug={slug} />
             </div>
         </nav>
     );
@@ -30,10 +35,12 @@ export const Navbar = ( {slug}: NProps) => {
 
 export const NavbarSkeleton = () => {
     return (
-        <nav className="h-20 border-b font-medium bg-white bg-white">
-            <div className="max-w(--breakpoint-xl) mx-auto flex justify-between items-center h-full px-4 lg:px-12">
+        <nav className="h-20 border-b font-medium bg-white">
+            <div className="max-w-(--breakpoint-xl) mx-auto flex justify-between items-center h-full px-4 lg:px-12">
                 <div />
-                {/*TODO: Skeleton for checkout button*/}
+                <Button disabled={true} className="bg-white">
+                    <ShoppingCartIcon className="text-black" />
+                </Button>
             </div>
         </nav>
     )
