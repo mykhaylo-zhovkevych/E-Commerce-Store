@@ -51,7 +51,8 @@ export default buildConfig({
           products: {},
         },
         tenantsArrayField: {
-          includeDefaultField: false
+          includeDefaultField: false,
+          arrayTenantFieldName: "tenants"
         },
         userHasAccessToAllTenants: (user) =>
           user?.collection === "users" && Boolean(user.roles?.includes("super-admin"))

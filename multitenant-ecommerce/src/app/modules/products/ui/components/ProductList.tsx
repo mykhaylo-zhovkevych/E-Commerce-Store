@@ -9,12 +9,12 @@ import {DEFAULT_LIMIT} from "@/constants/constants";
 import {ProductCardSkeleton} from "@/app/modules/products/ui/components/product-card";
 
 
-interface Props {
+interface PLProps {
     category?: string;
     tenantSlug?: string;
 }
 
-export const ProductList = ({category, tenantSlug}: Props) => {
+export const ProductList = ({category, tenantSlug}: PLProps) => {
     const [filters] = useProductFilter();
 
     const trpc = useTRPC();

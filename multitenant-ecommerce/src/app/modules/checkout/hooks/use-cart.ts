@@ -6,7 +6,7 @@ export const useCart = (tenantSlug: string) => {
     const addProduct = useCartStore((state) => state.addProduct);
     const removeProduct = useCartStore((state) => state.removeProduct);
     const clearCart = useCartStore((state) => state.clearCart);
-    const clearAllCarts = useCartStore(state => {state.clearAllCarts()});
+    const clearAllCarts = useCartStore((state) => state.clearAllCarts);
 
     // React Compiler sees a changing input and re-derives on every update
     const productIds = useCartStore(
@@ -35,7 +35,7 @@ export const useCart = (tenantSlug: string) => {
         addProduct: (productId: string) => addProduct(tenantSlug, productId),
         removeProduct: (productId: string) => removeProduct(tenantSlug, productId),
         clearCart: clearTenantCart,
-        clearAllCarts: clearTenantCart,
+        clearAllCarts,
         toggleProduct,
         isProductInCart,
         totalItemsCount: productIds.length,

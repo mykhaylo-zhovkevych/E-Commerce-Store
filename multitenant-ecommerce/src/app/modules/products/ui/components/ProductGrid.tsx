@@ -28,7 +28,7 @@ export const ProductGrid = ({
                         tenantImageUrl={product.tenant?.image?.url}
                         reviewRating={0}
                         reviewCount={0}
-                        price={0}
+                        price={product.price}
                     />
                 ))}
             </div>

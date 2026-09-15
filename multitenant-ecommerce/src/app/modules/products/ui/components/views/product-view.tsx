@@ -20,10 +20,7 @@ export const ProductListView = ({category: cat, tenantSlug}: PLVProps) => (
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-6 gap-y-6 gap-x-10">
             <div className="lg:col-span-2 xl:col-span-2">
-                <ProductFilter>
-
-                </ProductFilter>
-
+                <ProductFilter />
             </div>
             <div className={cn("border p-2", "lg:col-span-4 xl:col-span-4")}>
                 <Suspense fallback={<ProductListSkeleton />}>
