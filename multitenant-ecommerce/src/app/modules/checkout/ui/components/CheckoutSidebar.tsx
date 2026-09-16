@@ -4,12 +4,12 @@ import {CircleXIcon} from "lucide-react";
 
 interface CSProps {
     total: number;
-    onCheckout: () => void;
+    onPurchase: () => void;
     isCanceled?: boolean;
-    isPending?: boolean;
+    disable?: boolean;
 }
 
-export const CheckoutSidebar = ({ total, onCheckout, isPending, isCanceled}: CSProps) => {
+export const CheckoutSidebar = ({ total, onPurchase, disable, isCanceled}: CSProps) => {
 
     return (
       <div className="border rounded-md overflow-hidden bg-white flex flex-col">
@@ -22,7 +22,7 @@ export const CheckoutSidebar = ({ total, onCheckout, isPending, isCanceled}: CSP
               </p>
           </div>
           <div className="p-4 flex items-center justify-center">
-              <Button variant="elevated" disabled={isPending} onClick={onCheckout} size="lg" className="text-base w-full text-white bg-primary
+              <Button variant="elevated" disabled={disable} onClick={onPurchase} size="lg" className="text-base w-full text-white bg-primary
               hover:bg-primary">
                   Checkout
               </Button>

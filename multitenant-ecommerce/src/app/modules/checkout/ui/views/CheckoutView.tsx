@@ -3,13 +3,15 @@ import {useEffect} from "react";
 import {toast} from "sonner";
 import {LoaderIcon} from "lucide-react";
 import {InboxIcon} from "lucide-react";
+import {useRouter} from "next/navigation";
 
 import {useTRPC} from "@/trpc/client";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useMutation} from "@tanstack/react-query";
 import {useCart} from "@/app/modules/checkout/hooks/use-cart";
 import {generateTenantURL} from "@/lib/utils";
 import {CheckoutItem} from "@/app/modules/checkout/ui/components/CheckoutItem";
 import {CheckoutSidebar} from "@/app/modules/checkout/ui/components/CheckoutSidebar";
+import {useCheckoutStates} from "@/app/modules/checkout/hooks/use-checkout-states";
 
 interface CVProps {
     tenantSlug: string;
@@ -17,12 +19,40 @@ interface CVProps {
 
 const CheckoutView = ({tenantSlug}: CVProps) => {
     const {productIds, clearCart, removeProduct} = useCart(tenantSlug);
-
+    const router = useRouter();
     const trpc = useTRPC();
+    const [states, setStates] = useCheckoutStates();
     // Cart ids live in localStorage, so this can only resolve in the browser; useQuery stays idle during SSR.
     const {data, error, isLoading} = useQuery(trpc.checkout.getProducts.queryOptions({
         ids: productIds,
     }));
+
+    const purchase = useMutation(trpc.checkout.purchase.mutationOptions({
+        onMutate: () => {
+          setStates({ success: false, cancel: false });
+        },
+        onSuccess: (data) => {
+            // eslint-disable-next-line react-hooks/immutability
+            window.location.href = data.url;
+        },
+        onError: (error) => {
+            if (error.data?.code === "UNAUTHORIZED") {
+                // TODO: Modify when the subdomain are enabled
+                router.push("/sign-in");
+            }
+            toast.error(error.message);
+        }
+    }));
+
+    useEffect(() => {
+
+        if (states.success) {
+            clearCart();
+            router.push("/products");
+        }
+
+    }, [states.success, clearCart, router]);
+
 
     useEffect(() => {
         if (!error) return;
@@ -78,9 +108,9 @@ const CheckoutView = ({tenantSlug}: CVProps) => {
                 <div className="lg:col-span-3">
                     <CheckoutSidebar
                         total={data.totalPrice}
-                        onCheckout={() => {}}
-                        isCanceled={false}
-                        isPending={false}
+                        onPurchase={() => purchase.mutate({ tenantSlug, productIds })}
+                        isCanceled={states.cancel}
+                        disable={purchase.isPending}
                     />
                 </div>
             </div>
