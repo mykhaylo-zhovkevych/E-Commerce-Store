@@ -47,11 +47,11 @@ const CheckoutView = ({tenantSlug}: CVProps) => {
     useEffect(() => {
 
         if (states.success) {
-            clearCart();
+            setStates({success: false, cancel: false}).then(r => clearCart());
             router.push("/products");
         }
 
-    }, [states.success, clearCart, router]);
+    }, [states.success, clearCart, router, setStates]);
 
 
     useEffect(() => {
