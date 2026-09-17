@@ -24,9 +24,9 @@ export const checkoutRouter = createTRPCRouter({
             where: {
                 and: [
                     {
-                     id: {
+                        id: {
                          in: input.productIds
-                     }
+                    }
                     },
                     {
                         "tenant.slug": {

@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload";
 
 export const Products: CollectionConfig = {
     slug: "products",
+    admin: {
+        useAsTitle: "name"
+    },
     fields: [
         {
             name: "name",
@@ -21,7 +24,7 @@ export const Products: CollectionConfig = {
             }
         },
         {
-            // Temporary test data: higher scores appear first
+            // temp data, todo: actualize later
             name: "trendScore",
             type: "number",
             defaultValue: 0,
