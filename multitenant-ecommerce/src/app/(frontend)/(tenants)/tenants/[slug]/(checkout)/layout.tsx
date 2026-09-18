@@ -1,9 +1,6 @@
-import {Suspense} from "react";
-
 import {Navbar} from "@/app/modules/checkout/ui/components/Navbar";
 import {Footer} from "@/app/modules/tenants/ui/components/Footer";
 import {getQueryClient, trpc} from "@/trpc/server";
-import {dehydrate, HydrationBoundary} from "@tanstack/react-query";
 
 interface LayoutProps {
     children: React.ReactNode;

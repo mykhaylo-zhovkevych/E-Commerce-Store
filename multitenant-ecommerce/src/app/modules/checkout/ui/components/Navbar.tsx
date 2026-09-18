@@ -20,17 +20,3 @@ export const Navbar = ( {slug}: NProps) => {
         </nav>
     );
 };
-
-// export const NavbarSkeleton = () => {
-//     return (
-//         <nav className="h-20 border-b font-medium bg-white bg-white">
-//             <div className="max-w(--breakpoint-xl) mx-auto flex justify-between items-center h-full px-4 lg:px-12">
-//                 <div />
-//                 <Button disabled={true} className="bg-white" />
-//                 <Button className="text-black">
-//                     <ShoppingCartIcon />
-//                 </Button>
-//             </div>
-//         </nav>
-//     )
-// }

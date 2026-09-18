@@ -22,8 +22,7 @@ export const CheckoutSidebar = ({ total, onPurchase, disable, isCanceled}: CSPro
               </p>
           </div>
           <div className="p-4 flex items-center justify-center">
-              <Button variant="elevated" disabled={disable} onClick={onPurchase} size="lg" className="text-base w-full text-white bg-primary
-              hover:bg-primary">
+              <Button variant="elevated" disabled={disable} onClick={onPurchase} size="lg" className="text-base w-full text-white bg-primary hover:bg-primary">
                   Checkout
               </Button>
           </div>

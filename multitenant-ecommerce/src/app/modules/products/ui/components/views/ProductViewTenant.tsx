@@ -108,7 +108,7 @@ export const ProductViewTenant = ({ productId, tenantSlug }: PVTProps) => {
                                 {
                                     data.isPurchased ? (
                                         <Button variant="elevated" asChild className="flex-1 font-medium bg-pink-400">
-                                            <Link prefetch href={`/library/${data.id}`}>View in Library</Link>
+                                            <Link prefetch href="/library">View in Library</Link>
                                         </Button>
                                     ) : ( <CartButton tenantSlug={tenantSlug} productId={productId}/> )
                                 }

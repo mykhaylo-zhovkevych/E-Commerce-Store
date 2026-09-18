@@ -3,11 +3,24 @@ import {useSuspenseQuery} from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
 import {ShoppingCartIcon} from "lucide-react";
+import dynamic from "next/dynamic";
 
 import {useTRPC} from "@/trpc/client";
 import {generateTenantURL} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
-import {CheckoutButton} from "@/app/modules/checkout/ui/components/CheckoutButton";
+
+const CheckoutButton = dynamic(
+    () => import("@/app/modules/checkout/ui/components/CheckoutButton")
+        .then((mod) => mod.CheckoutButton),
+    {
+        ssr: false,
+        loading: () => (
+            <Button disabled={true} className="bg-white">
+                <ShoppingCartIcon className="text-black" />
+            </Button>
+        ),
+    },
+);
 
 interface NProps {
     slug: string;
