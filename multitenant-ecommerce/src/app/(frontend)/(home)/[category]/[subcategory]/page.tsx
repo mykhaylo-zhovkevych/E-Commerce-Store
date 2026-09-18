@@ -1,6 +1,6 @@
 import {getQueryClient, trpc} from "@/trpc/server";
 import {dehydrate, HydrationBoundary} from "@tanstack/react-query";
-import ProductListView from "@/app/modules/products/ui/components/views/product-view";
+import ProductListView from "@/app/modules/products/ui/components/views/ProductView";
 import {loadProductFilters} from "@/app/modules/products/search-params";
 import {SearchParams} from "next/dist/server/request/search-params";
 

@@ -29,6 +29,7 @@ export const ProductGrid = ({
                         reviewRating={0}
                         reviewCount={0}
                         price={product.price}
+                        isPurchased={product.isPurchased}
                     />
                 ))}
             </div>

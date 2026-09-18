@@ -2,7 +2,7 @@
 
 import {Poppins} from "next/font/google"
 import Link from "next/link";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import React from "react";
 import {MenuIcon} from "lucide-react";
 
@@ -10,7 +10,7 @@ import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {NavbarSidebarLeft} from "@/app/modules/home/ui/components/NavbarSidebarLeft";
 import {useTRPC} from "@/trpc/client";
-import {useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -23,7 +23,8 @@ const NavbarItem = ({
     isActive
 }: NavbarItemProps) => {
     return (
-        <Button asChild variant='outline' className={cn("bg-transparent hover:bg-transparent rounded-full hover:border-primary border-transparent", isActive && "bg-black text-white hover:bg-black hover:text-white" )}>
+        <Button asChild variant='outline' className={cn("bg-transparent hover:bg-transparent rounded-full hover:border-primary border-transparent",
+            isActive && "bg-black text-white hover:bg-black hover:text-white" )}>
             <Link href={href}>
                 {children}
             </Link>
@@ -61,7 +62,15 @@ export const Navbar = () => {
     const [isSidebarOpen, setSidebarOpen] = React.useState(false);
 
     const trpc = useTRPC();
+    const router = useRouter();
+    const queryClient = useQueryClient();
     const session = useQuery(trpc.auth.session.queryOptions());
+    const logout = useMutation(trpc.auth.logout.mutationOptions({
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
+            router.push("/");
+        },
+    }));
 
     return (
         session.data?.user ? (
@@ -78,8 +87,16 @@ export const Navbar = () => {
                     ))}
                 </div>
                 <div className="h-20 hidden lg:flex  border-b font-medium bg-white">
-                    <Button asChild variant='secondary' className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-black text-white hover:text-black hover:bg-pink-400 transition-colors text-lg">
+                    <Button asChild variant='secondary' className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-white hover:bg-pink-400 transition-colors text-lg">
                         <Link href="/admin"> Admin</Link>
+                    </Button>
+                    <Button
+                        variant='secondary'
+                        disabled={logout.isPending}
+                        onClick={() => logout.mutate()}
+                        className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-black text-white hover:text-black hover:bg-pink-400 transition-colors text-lg"
+                    >
+                        Log out
                     </Button>
                 </div>
             </nav>

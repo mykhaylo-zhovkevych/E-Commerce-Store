@@ -14,6 +14,7 @@ interface ProductCardProps {
     reviewRating: number;
     reviewCount: number;
     price: number;
+    isPurchased: boolean;
 };
 
 export const ProductCard = ({
@@ -25,6 +26,7 @@ export const ProductCard = ({
     reviewRating,
     reviewCount,
     price,
+    isPurchased,
 }: ProductCardProps) => {
     const router = useRouter();
 
@@ -75,7 +77,11 @@ export const ProductCard = ({
                 </div>
                 <div className="p-4">
                     <div className="relative px-2 py-1 border bg-pink-400 w-fit">
+                        {isPurchased ? (
+                            <div className="p-4"><span>Purchased</span></div>
+                        ) : (
                         <p className="text-sm font-medium">{formatCurrency(price)}</p>
+                        )}
                     </div>
                 </div>
             </div>

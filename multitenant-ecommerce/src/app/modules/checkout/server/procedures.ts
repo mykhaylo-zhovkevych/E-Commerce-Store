@@ -1,14 +1,11 @@
 import z from "zod"
-import type {Where, Sort} from "payload";
 import type Stripe from "stripe";
 
 import {baseProcedure, createTRPCRouter, protectedProcedure} from "@/trpc/init";
 import {Media, Tenant} from "@/payload-types";
 import {TRPCError} from "@trpc/server";
-import {productsRouter} from "@/app/modules/products/server/procedures";
 import {CheckoutMetadata, ProductMetadata} from "@/app/modules/checkout/types";
 import {stripe} from "@/lib/stripe";
-import {generateTenantURL} from "@/lib/utils";
 
 
 export const checkoutRouter = createTRPCRouter({
@@ -94,6 +91,7 @@ export const checkoutRouter = createTRPCRouter({
         }
         return { url: checkout.url};
     }),
+
     getProducts: baseProcedure
         .input(z.object({
                 ids: z.array(z.string())

@@ -1,11 +1,12 @@
 import z from "zod"
 import type {Payload, Sort, Where} from "payload";
+import {headers as getHeaders} from "next/headers";
 
 import {baseProcedure, createTRPCRouter} from "@/trpc/init";
 import {sortValues} from "@/app/modules/products/search-params";
 import {Media, Tenant} from "@/payload-types";
 import {DEFAULT_LIMIT} from "@/constants/constants";
-import {PluginMultiTenantTranslationKeys} from "@payloadcms/plugin-multi-tenant/translations/languages/all";
+
 
 // Category slug plus all its direct subcategory slugs, so filtering by a parent also matches its children.
 const getCategorySlugs = async (payload: Payload, slug: string) => {
@@ -27,6 +28,42 @@ const getCategorySlugs = async (payload: Payload, slug: string) => {
     return [slug, ...subcategories];
 };
 
+// Ids from `productIds` that the currently signed-in user has an order for. Empty when signed out.
+// Look at the authed users, if they have purchased products
+const getPurchasedProductIds = async (payload: Payload, productIds: string[]) => {
+    const headers = await getHeaders();
+    const session = await payload.auth({ headers });
+
+    if (!session.user || productIds.length === 0) {
+        return new Set<string>();
+    }
+
+    const { docs } = await payload.find({
+        collection: "orders",
+        pagination: false,
+        depth: 0,
+        where: {
+            and: [
+                { user:
+                        {
+                            equals: session.user.id
+                        }
+                },
+                { product:
+                        {
+                            in: productIds
+                        }
+                },
+            ],
+        },
+    });
+
+    return new Set(docs.map((order) => (typeof order.product === "string" ? order.product : order.product.id)),
+    );
+};
+
+
+
 export const productsRouter = createTRPCRouter({
     getOne: baseProcedure
         .input(
@@ -35,14 +72,16 @@ export const productsRouter = createTRPCRouter({
             })
         )
         .query(async ({ ctx, input }) => {
-            const product = await  ctx.payload.findByID({
+            const product = await ctx.payload.findByID({
                 collection: "products",
                 id: input.id,
                 depth: 2,
             });
 
+            const purchasedIds = await getPurchasedProductIds(ctx.payload, [product.id]);
             return {
                 ...product,
+                isPurchased: purchasedIds.has(product.id),
                 image: product.image as Media | null,
                 tenant: product.tenant as Tenant & { image: Media | null },
             }
@@ -110,10 +149,12 @@ export const productsRouter = createTRPCRouter({
                 limit: input.limit,
             });
 
+        const purchasedIds = await getPurchasedProductIds(ctx.payload, productsData.docs.map((doc) => doc.id));
         return {
             ...productsData,
             docs: productsData.docs.map((doc) => ({
                 ...doc,
+                isPurchased: purchasedIds.has(doc.id),
                 image: doc.image as Media | null,
                 tenant: doc.tenant as Tenant & { image: Media | null }
             }))

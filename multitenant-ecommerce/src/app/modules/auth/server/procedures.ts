@@ -3,7 +3,7 @@ import {TRPCError} from "@trpc/server";
 import { headers as getHeaders } from "next/headers";
 import {APIError, AuthenticationError, LockedAuth, Payload, UnverifiedEmail} from "payload";
 import {loginSchema, registerSchema} from "@/app/modules/auth/schemas";
-import {generateAuthCookie} from "@/app/modules/auth/utils";
+import {clearAuthCookie, generateAuthCookie} from "@/app/modules/auth/utils";
 
 // payload.login() throws a raw APIError on every failure (bad password ->
 // AuthenticationError/401, too many attempts -> LockedAuth/401, global
@@ -48,10 +48,9 @@ const authRouter = createTRPCRouter({
 
         return session;
     }),
-    // logout: baseProcedure.mutation(async () => {
-    //     const cookies = await getCookies();
-    //     cookies.delete(AUTH_COOKIE);
-    // }),
+    logout: baseProcedure.mutation(async ({ ctx }) => {
+        await clearAuthCookie(ctx.payload.config.cookiePrefix);
+    }),
     register: baseProcedure.input(registerSchema)
         // input is the zod's validation above
         .mutation(async ({ input, ctx }) => {

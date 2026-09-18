@@ -17,3 +17,9 @@ export const generateAuthCookie = async (
         path: "/",
     });
 };
+
+export const clearAuthCookie = async (prefix: string) => {
+    const cookies = await getCookies();
+
+    cookies.delete(`${prefix}-token`);
+};
