@@ -110,7 +110,7 @@ const categories: CategorySeed[] = [
             },
             {
                 name: "UI & UX Design",
-                slug: "ui-ux-design",
+                slug: "components-ux-design",
             },
         ],
     },
