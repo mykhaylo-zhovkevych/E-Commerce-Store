@@ -26,7 +26,7 @@ export const ProductCard = ({
 
 
     return (
-        <Link prefetch href={`/library/${id}`}>
+        <Link prefetch href="/library">
             <div className="border rounded-md bg-white overflow-hidden h-full flex flex-col">
                 <div className="relative aspect-square">
                     <Image
