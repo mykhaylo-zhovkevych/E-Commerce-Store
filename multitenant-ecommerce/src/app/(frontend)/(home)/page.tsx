@@ -3,7 +3,7 @@ import { SearchParams } from "next/dist/server/request/search-params";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { loadProductFilters } from "@/app/modules/products/search-params";
-import ProductListView from "@/app/modules/products/ui/components/views/product-view";
+import ProductListView from "@/app/modules/products/ui/components/views/ProductView";
 import { DEFAULT_LIMIT } from "@/constants/constants";
 
 const Page = async ({ searchParams }: { searchParams: Promise<SearchParams> }) => {

@@ -10,6 +10,7 @@ import {ExpandedLineItem} from "@/app/modules/checkout/types";
 export async function POST(req: Request) {
     let event: Stripe.Event;
 
+    // Validation with the signature
     try {
         event = stripe.webhooks.constructEvent(
             await req.text(),

@@ -1,11 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { StarIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 
-import {formatCurrency, generateTenantURL} from "@/lib/utils";
-
-interface ProductCardProps {
+interface PCProps {
     id: string;
     name: string;
     imageUrl?: string | null;
@@ -13,8 +10,7 @@ interface ProductCardProps {
     tenantImageUrl?: string | null;
     reviewRating: number;
     reviewCount: number;
-    price: number;
-    isPurchased: boolean;
+    tags: { id: string; name: string }[];
 };
 
 export const ProductCard = ({
@@ -25,20 +21,12 @@ export const ProductCard = ({
     tenantImageUrl,
     reviewRating,
     reviewCount,
-    price,
-    isPurchased,
-}: ProductCardProps) => {
-    const router = useRouter();
+    tags,
+}: PCProps) => {
 
-    const handleTenantClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        router.push(generateTenantURL(tenantSlug));
-    };
 
     return (
-        <Link href={`${generateTenantURL(tenantSlug)}/products/${id}`}>
+        <Link prefetch href={`/library/${id}`}>
             <div className="border rounded-md bg-white overflow-hidden h-full flex flex-col">
                 <div className="relative aspect-square">
                     <Image
@@ -53,7 +41,7 @@ export const ProductCard = ({
                     <h2 className="text-lg font-medium line-clamp-4">
                         {name}
                     </h2>
-                    <div className="flex items-center gap-2" onClick={handleTenantClick}>
+                    <div className="flex items-center gap-2">
                         {tenantImageUrl && (
                             <Image alt={tenantSlug}
                                    src={tenantImageUrl}
@@ -75,15 +63,18 @@ export const ProductCard = ({
                         </div>
                     )}
                 </div>
-                <div className="p-4">
-                    <div className="relative px-2 py-1 border bg-pink-400 w-fit">
-                        {isPurchased ? (
-                            <div className="p-4"><span>Purchased</span></div>
-                        ) : (
-                        <p className="text-sm font-medium">{formatCurrency(price)}</p>
-                        )}
+                {tags.length > 0 && (
+                    <div className="p-4 flex flex-wrap gap-2">
+                        {tags.map((tag) => (
+                            <span
+                                key={tag.id}
+                                className="rounded-full bg-blue-100 text-blue-700 px-3 py-1 text-sm font-medium"
+                            >
+                                {tag.name}
+                            </span>
+                        ))}
                     </div>
-                </div>
+                )}
             </div>
         </Link>
     )

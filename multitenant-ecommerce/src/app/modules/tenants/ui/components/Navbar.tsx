@@ -1,10 +1,10 @@
 "use client";
-import {useTRPC} from "@/trpc/client";
 import {useSuspenseQuery} from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
 import {ShoppingCartIcon} from "lucide-react";
 
+import {useTRPC} from "@/trpc/client";
 import {generateTenantURL} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {CheckoutButton} from "@/app/modules/checkout/ui/components/CheckoutButton";

@@ -32,8 +32,7 @@ const CheckoutView = ({tenantSlug}: CVProps) => {
           setStates({ success: false, cancel: false });
         },
         onSuccess: (data) => {
-            // eslint-disable-next-line react-hooks/immutability
-            window.location.href = data.url;
+            window.location.assign(data.url);
         },
         onError: (error) => {
             if (error.data?.code === "UNAUTHORIZED") {
@@ -45,9 +44,8 @@ const CheckoutView = ({tenantSlug}: CVProps) => {
     }));
 
     useEffect(() => {
-
         if (states.success) {
-            setStates({success: false, cancel: false}).then(r => clearCart());
+            setStates({success: false, cancel: false}).then(() => clearCart());
             router.push("/products");
         }
 

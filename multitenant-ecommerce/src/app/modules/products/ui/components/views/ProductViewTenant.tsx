@@ -105,7 +105,13 @@ export const ProductViewTenant = ({ productId, tenantSlug }: PVTProps) => {
                     <div className="lg:col-span-2 border-t lg:border-t-0 lg:border-l">
                         <div className="flex flex-col gap-4 p-6 border-b">
                             <div className="flex flex-row items-center gap-2 w-full" >
-                                <CartButton tenantSlug={tenantSlug} productId={productId}/>
+                                {
+                                    data.isPurchased ? (
+                                        <Button variant="elevated" asChild className="flex-1 font-medium bg-pink-400">
+                                            <Link prefetch href={`/library/${data.id}`}>View in Library</Link>
+                                        </Button>
+                                    ) : ( <CartButton tenantSlug={tenantSlug} productId={productId}/> )
+                                }
                                 <Button variant="elevated" className="bg-pink-500 w-auto" onClick={() => {}} disabled={false}>
                                     <LinkIcon></LinkIcon>
                                 </Button>
